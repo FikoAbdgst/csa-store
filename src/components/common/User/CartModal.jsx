@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { IoClose } from 'react-icons/io5'
 import { CiShoppingCart } from 'react-icons/ci'
-import { addToCart, removeFromCart, clearCart, selectCartItems, selectCartTotalPrices } from '../../../redux/slices/cartSlice';
+import { addToCart, removeFromCart, clearItemFromCart, selectCartItems, selectCartTotalPrices } from '../../../redux/slices/cartSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import FormattedPrice from '../../Utils/FormattedPrice';
 
@@ -27,8 +27,8 @@ const CartModal = ({ isOpen, onClose }) => {
     const handleMinus = (item) => {
         dispatch(removeFromCart(item));
     }
-    const handleClearCart = () => {
-        dispatch(clearCart());
+    const handleClearCart = (item) => {
+        dispatch(clearItemFromCart(item));
     }
 
 
@@ -68,6 +68,14 @@ const CartModal = ({ isOpen, onClose }) => {
                         {cartItems.length > 0 ? (
                             cartItems.map(item => (
                                 <div key={item.id} className="flex items-center justify-between p-2 border-b">
+                                    <div className="flex items-center gap-4">
+                                        <button
+                                            className="text-red-500 hover:text-red-700"
+                                            onClick={() => handleClearCart(item)}
+                                        >
+                                            <IoClose className="text-lg" />
+                                        </button>
+                                    </div>
                                     <div className="flex items-center gap-4">
                                         <img src={item.image_url} alt={item.name} className="w-16 h-16 object-cover rounded" />
                                         <div>

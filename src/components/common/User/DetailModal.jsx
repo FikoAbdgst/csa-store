@@ -24,6 +24,10 @@ const DetailModal = ({ product, isOpen, onClose }) => {
         if (value >= 1) {
             setQuantity(value);
         }
+        if (value == product.stock) {
+            setQuantity(product.stock); // Batasi quantity tidak melebihi stok
+            alert('Stock is limited to ' + product.stock);
+        }
     };
 
     const handleBackdropClick = (e) => {
@@ -78,7 +82,10 @@ const DetailModal = ({ product, isOpen, onClose }) => {
 
                             {/* Price */}
                             <p className="text-2xl font-bold text-blue-600 mb-6">
-                                ${product.price}
+                                {formattedPrice(product.price)}
+                            </p>
+                            <p>
+                                Stock :{product.stock}
                             </p>
 
                             {/* Quantity Selector */}
@@ -99,7 +106,7 @@ const DetailModal = ({ product, isOpen, onClose }) => {
                                     </span>
                                     <button
                                         onClick={() => handleQuantityChange(quantity + 1)}
-                                        className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded"
+                                        className={`bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded ${quantity == product.stock ? 'opacity-50 cursor-not-allowed disabled' : ''}`}
                                     >
                                         +
                                     </button>
