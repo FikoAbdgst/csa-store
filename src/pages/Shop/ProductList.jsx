@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../../supabaseClient';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import DetailModal from '../../components/common/User/DetailModal';
+
+import { addItemToFavorite, selectFavoriteItems } from '../../redux/slices/favSlice';
+import { FaHeart } from 'react-icons/fa';
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
     const cartItems = useSelector(state => state.cart.items);
+    const dispatch = useDispatch();
+    const favoriteItems = useSelector(selectFavoriteItems);
 
     useEffect(() => {
         console.log('Cart items:', cartItems);
-    }, [cartItems]);
+        console.log('Favorite items:', favoriteItems);
+    }, [cartItems, favoriteItems]);
 
     const loadProducts = async () => {
         try {
@@ -36,7 +43,6 @@ const ProductList = () => {
 
     console.log('Products:', products);
 
-
     const handleOpenModal = (product) => {
         setSelectedProduct(product);
         setIsModalOpen(true);
@@ -56,12 +62,30 @@ const ProductList = () => {
         });
     }
 
+    const handleClickFav = product => {
+        dispatch(addItemToFavorite(product));
+    };
+
+    const favoriteProductIds = favoriteItems.map(item => item.id);
+
+    const isProductInFavorites = (productId) => {
+        return favoriteProductIds.includes(productId);
+    };
+
     return (
         <div>
             <h2 className="text-2xl font-bold mb-4">Products</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {products.map(product => (
-                    <div key={product.id} className="bg-white p-4 rounded-lg shadow hover:shadow-lg transition-shadow duration-200">
+                    <div key={product.id} className="bg-white p-4 relative rounded-lg shadow hover:shadow-lg transition-shadow duration-200">
+                        <div className='absolute top-2 right-2'>
+                            <button onClick={() => handleClickFav(product)}>
+                                <FaHeart
+                                    size={20}
+                                    color={isProductInFavorites(product.id) ? 'red' : 'gray'}
+                                />
+                            </button>
+                        </div>
                         <img src={product.image_url} alt={product.name} className="w-full h-48 object-cover mb-4 rounded" />
                         <h3 className="text-lg font-semibold">{product.name}</h3>
                         <p className="text-gray-600">{product.description}</p>
